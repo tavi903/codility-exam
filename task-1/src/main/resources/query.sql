@@ -1,5 +1,5 @@
 -- SQL Lite
-SELECT b.id, COUNT(DISTINCT foo.pId) AS passengers_on_board
+SELECT b.id, COUNT(DISTINCT buses_with_passengers.pId) AS passengers_on_board
 FROM buses b
 LEFT JOIN (
 	-- Buses with Passengers
@@ -15,6 +15,6 @@ LEFT JOIN (
 		INNER JOIN passengers p
 			ON (b.origin == p.origin AND b.destination == p.destination AND time(p.time) <= time(b.time))
 	) WHERE (minBusTime == busTime)
-) foo
-	ON (b.id == foo.busId)
+) buses_with_passengers
+	ON (b.id == buses_with_passengers.busId)
 GROUP BY b.id;

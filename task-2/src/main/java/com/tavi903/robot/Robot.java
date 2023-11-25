@@ -1,18 +1,22 @@
 package com.tavi903.robot;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Robot {
 
     private Position position;
-    private RobotDirection direction;
+    private Direction direction;
+    private List<Pair<Position, Direction>> memory;
 
     public Robot() {
         this.position = new Position(0,0);
-        this.direction = RobotDirection.RIGHT;
+        this.direction = Direction.RIGHT;
+        this.memory = new ArrayList<>();
     }
 
-    private enum RobotDirection {
+    private enum Direction {
         RIGHT, DOWN, LEFT, UP;
     }
 
@@ -20,6 +24,7 @@ public class Robot {
      * Procedure with Side Effects
      */
     public void moveRobot(String[] R, Map<Position, State> cellStates) {
+        updateMemory(this.position, this.direction);
         cellStates.put(this.position, State.CLEAN);
         switch (direction) {
             case RIGHT -> moveRight(R);
@@ -35,11 +40,11 @@ public class Robot {
             return;
         }
         if (canMoveDown(R)) {
-            this.direction = RobotDirection.DOWN;
+            this.direction = Direction.DOWN;
             this.position = new Position(this.position.getX(), this.position.getY()+1);
             return;
         }
-        this.direction = RobotDirection.LEFT;
+        this.direction = Direction.LEFT;
         this.position = new Position(this.position.getX()-1, this.position.getY());
     }
 
@@ -49,11 +54,11 @@ public class Robot {
             return;
         }
         if (canMoveLeft(R)) {
-            this.direction = RobotDirection.LEFT;
+            this.direction = Direction.LEFT;
             this.position = new Position(this.position.getX()-1, this.position.getY());
             return;
         }
-        this.direction = RobotDirection.UP;
+        this.direction = Direction.UP;
         this.position = new Position(this.position.getX(), this.position.getY()-1);
     }
 
@@ -63,11 +68,11 @@ public class Robot {
             return;
         }
         if (canMoveUp(R)) {
-            this.direction = RobotDirection.UP;
+            this.direction = Direction.UP;
             this.position = new Position(this.position.getX(), this.position.getY()-1);
             return;
         }
-        this.direction = RobotDirection.RIGHT;
+        this.direction = Direction.RIGHT;
         this.position = new Position(this.position.getX()+1, this.position.getY());
     }
 
@@ -77,11 +82,11 @@ public class Robot {
             return;
         }
         if (canMoveRight(R)) {
-            this.direction = RobotDirection.RIGHT;
+            this.direction = Direction.RIGHT;
             this.position = new Position(this.position.getX()+1, this.position.getY());
             return;
         }
-        this.direction = RobotDirection.DOWN;
+        this.direction = Direction.DOWN;
         this.position = new Position(this.position.getX(), this.position.getY()+1);
     }
 
@@ -99,6 +104,12 @@ public class Robot {
 
     private boolean canMoveUp(String[] R) {
         return this.position.getY()-1>=0 && R[this.position.getY()-1].charAt(this.position.getX()) == '.';
+    }
+
+    private void updateMemory(Position position, Direction direction) {
+        if (memory.contains(new Pair<>(position, direction)))
+            throw new RuntimeException("The robot is in a loop!");
+        memory.add(new Pair<>(position, direction));
     }
 
 }

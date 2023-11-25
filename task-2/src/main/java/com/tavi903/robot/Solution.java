@@ -14,17 +14,15 @@ public class Solution {
             }
         }
 
-        int counter = 0;
-        long totalCleanCells = 0;
-        while (counter < (R.length * R[0].length())) {
-            robot.moveRobot(R, cellStates);
-            long temp = cellStates.values().stream().filter(state -> state == State.CLEAN).count();
-            if (temp == totalCleanCells)
-                counter++;
-            totalCleanCells = temp;
+        try {
+            while (true) {
+                robot.moveRobot(R, cellStates);
+            }
+        } catch (RuntimeException exp) {
+            // do nothing
         }
 
-        return (int) totalCleanCells;
+        return (int) cellStates.values().stream().filter(state -> state == State.CLEAN).count();
     }
 
 }
